@@ -1,13 +1,24 @@
 ==============================================
-COPY THIS FOR RENDER SECRET FILE
+COPY THIS FOR RENDER SECRET FILES
 ==============================================
 
-When creating Secret File on Render:
-- Filename: .gtasks-server-credentials.json
-- Contents: Run this command, then paste (Cmd+V)
+You need TWO secret files on Render:
 
-COMMAND TO COPY CREDENTIALS:
-cat /Users/apple/gtasks-mcp-server-node/.gtasks-server-credentials.json | pbcopy
+1. CREDENTIALS FILE
+   Filename: .gtasks-server-credentials.json
+
+   To get contents, run locally:
+   cat .gtasks-server-credentials.json | jq -c .
+
+   Then paste the one-line JSON output into Render
+
+2. OAUTH KEYS FILE
+   Filename: gcp-oauth.keys.json
+
+   To get contents, run locally:
+   cat gcp-oauth.keys.json | jq -c .
+
+   Then paste the one-line JSON output into Render
 
 ==============================================
 
@@ -16,5 +27,6 @@ ENVIRONMENT VARIABLES FOR RENDER:
 NODE_ENV=production
 PORT=10000
 GOOGLE_CREDENTIALS_PATH=/etc/secrets/.gtasks-server-credentials.json
+GOOGLE_OAUTH_KEYS_PATH=/etc/secrets/gcp-oauth.keys.json
 
 ==============================================

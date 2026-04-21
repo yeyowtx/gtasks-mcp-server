@@ -22,6 +22,8 @@ const __dirname = path.dirname(__filename);
 const PORT = parseInt(process.env.PORT || '10000', 10);
 const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS_PATH ||
   path.join(__dirname, "../.gtasks-server-credentials.json");
+const OAUTH_KEYS_PATH = process.env.GOOGLE_OAUTH_KEYS_PATH ||
+  path.join(__dirname, "../gcp-oauth.keys.json");
 
 // Initialize Google Tasks API
 const tasks = google.tasks("v1");
@@ -278,15 +280,29 @@ async function loadCredentials() {
     process.exit(1);
   }
 
+  if (!fs.existsSync(OAUTH_KEYS_PATH)) {
+    console.error("❌ OAuth keys not found at:", OAUTH_KEYS_PATH);
+    console.error("Please set GOOGLE_OAUTH_KEYS_PATH or add gcp-oauth.keys.json");
+    process.exit(1);
+  }
+
   // Read and clean the JSON file (remove any control characters or extra whitespace)
   let rawContent = fs.readFileSync(CREDENTIALS_PATH, "utf-8");
+  let oauthKeysContent = fs.readFileSync(OAUTH_KEYS_PATH, "utf-8");
 
   // Remove any control characters except normal spaces
   rawContent = rawContent.replace(/[\x00-\x1F\x7F]/g, '');
+  oauthKeysContent = oauthKeysContent.replace(/[\x00-\x1F\x7F]/g, '');
 
-  // Try to parse the cleaned content
+  // Parse the cleaned content
   const credentials = JSON.parse(rawContent.trim());
-  const auth = new google.auth.OAuth2();
+  const oauthKeys = JSON.parse(oauthKeysContent.trim());
+
+  // Extract client credentials
+  const { client_id, client_secret } = oauthKeys.installed;
+
+  // Create OAuth2 client with proper configuration
+  const auth = new google.auth.OAuth2(client_id, client_secret);
   auth.setCredentials(credentials);
   google.options({ auth });
 
