@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: gtasks-mcp-server
+    env: node
+    region: oregon
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: GOOGLE_CREDENTIALS_PATH
+        sync: false
+        # Set this to the path where you'll upload the credentials file
+        # Example: /opt/render/project/src/.gtasks-server-credentials.json
