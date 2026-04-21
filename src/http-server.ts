@@ -19,7 +19,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT || 10000;
+const PORT = parseInt(process.env.PORT || '10000', 10);
 const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS_PATH ||
   path.join(__dirname, "../.gtasks-server-credentials.json");
 
@@ -399,8 +399,8 @@ async function startServer() {
     console.log("✅ Google Tasks API connection successful");
     console.log(`📋 Found ${testResponse.data.items?.length || 0} task list(s)`);
 
-    // Start Express server
-    app.listen(PORT, () => {
+    // Start Express server - bind to 0.0.0.0 for Render
+    app.listen(PORT, '0.0.0.0', () => {
       console.log("\n✅ Google Tasks MCP HTTP Server started successfully!");
       console.log(`🌐 Server running on: http://0.0.0.0:${PORT}`);
       console.log(`🔗 MCP Endpoint: http://0.0.0.0:${PORT}/mcp`);
