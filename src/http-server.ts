@@ -278,7 +278,14 @@ async function loadCredentials() {
     process.exit(1);
   }
 
-  const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, "utf-8"));
+  // Read and clean the JSON file (remove any control characters or extra whitespace)
+  let rawContent = fs.readFileSync(CREDENTIALS_PATH, "utf-8");
+
+  // Remove any control characters except normal spaces
+  rawContent = rawContent.replace(/[\x00-\x1F\x7F]/g, '');
+
+  // Try to parse the cleaned content
+  const credentials = JSON.parse(rawContent.trim());
   const auth = new google.auth.OAuth2();
   auth.setCredentials(credentials);
   google.options({ auth });
