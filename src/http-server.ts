@@ -274,20 +274,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Load Google OAuth credentials
 async function loadCredentials() {
+  console.log("Checking credentials file:", CREDENTIALS_PATH);
   if (!fs.existsSync(CREDENTIALS_PATH)) {
     console.error("❌ Credentials not found at:", CREDENTIALS_PATH);
     console.error("Please run authentication first or set GOOGLE_CREDENTIALS_PATH");
     process.exit(1);
   }
+  console.log("✓ Credentials file exists");
 
+  console.log("Checking OAuth keys file:", OAUTH_KEYS_PATH);
   if (!fs.existsSync(OAUTH_KEYS_PATH)) {
     console.error("❌ OAuth keys not found at:", OAUTH_KEYS_PATH);
     console.error("Please set GOOGLE_OAUTH_KEYS_PATH or add gcp-oauth.keys.json");
     process.exit(1);
   }
+  console.log("✓ OAuth keys file exists");
 
   // Read and clean the JSON file (remove any control characters or extra whitespace)
+  console.log("Reading credentials...");
   let rawContent = fs.readFileSync(CREDENTIALS_PATH, "utf-8");
+  console.log("Reading OAuth keys...");
   let oauthKeysContent = fs.readFileSync(OAUTH_KEYS_PATH, "utf-8");
 
   // Remove any control characters except normal spaces
@@ -425,9 +431,16 @@ async function startServer() {
   try {
     console.log("🚀 Starting Google Tasks MCP HTTP Server...");
     console.log("=========================================");
+    console.log("Environment check:");
+    console.log("- PORT:", PORT);
+    console.log("- CREDENTIALS_PATH:", CREDENTIALS_PATH);
+    console.log("- OAUTH_KEYS_PATH:", OAUTH_KEYS_PATH);
+    console.log("- NODE_ENV:", process.env.NODE_ENV);
 
     // Load credentials
+    console.log("Loading credentials...");
     await loadCredentials();
+    console.log("Credentials loaded!");
 
     // Test Google Tasks API connection
     console.log("[Google Tasks] Testing API connection...");
