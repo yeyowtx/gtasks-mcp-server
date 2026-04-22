@@ -299,11 +299,24 @@ async function loadCredentials() {
   const oauthKeys = JSON.parse(oauthKeysContent.trim());
 
   // Extract client credentials
-  const { client_id, client_secret } = oauthKeys.installed;
+  const { client_id, client_secret, redirect_uris } = oauthKeys.installed;
 
   // Create OAuth2 client with proper configuration
-  const auth = new google.auth.OAuth2(client_id, client_secret);
+  const auth = new google.auth.OAuth2(
+    client_id,
+    client_secret,
+    redirect_uris[0]
+  );
   auth.setCredentials(credentials);
+
+  // Force token refresh if needed
+  try {
+    await auth.getAccessToken();
+    console.log("✅ Access token refreshed successfully");
+  } catch (error: any) {
+    console.error("⚠️ Token refresh failed:", error.message);
+  }
+
   google.options({ auth });
 
   console.log("✅ Google OAuth credentials loaded successfully");
